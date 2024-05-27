@@ -1,0 +1,6 @@
+<!-- launches the planner node-->
+
+<launch>
+    <node pkg="project" name="PlannerNode">
+    </node>
+</launch>
