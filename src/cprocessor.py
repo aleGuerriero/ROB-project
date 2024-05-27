@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from cv_bridge import CvBridge
 
-from project.scripts.colors import mask, LOWER_YELLOW, UPPER_YELLOW
+from project.scripts.colors import mask, LOWER_YELLOW, UPPER_YELLOW, MAGENTA
 
 import numpy as np
 import cv2 as cv
@@ -14,9 +14,11 @@ class CameraProcessor:
     Class for visualizing the processed camera info.
     """
     def __init__(
-            self
+            self,
+            show: bool = False
     ) -> None:
         self.canvas = None
+        self.show = show
         self.cv_bridge = CvBridge()
 
     def process(
@@ -32,13 +34,27 @@ class CameraProcessor:
         Return:
             An ndarray with ...
         """
-        img = self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
-        height, width, _ = img.shape
+    
+        img = self._get_track_outline(
+            self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
+        )
+        
+        if self.show:
+            self.show(img)
 
     def _get_track_outline(
-            self
+            self,
+            img: np.array
     ) -> np.ndarray:
-        pass
+        height, width, _ = img.shape
+        track_outline = np.zeros((height, width), dtype=np.uint8)
+        mask(img, np.array(LOWER_YELLOW), np.array(UPPER_YELLOW))
+
+        # Detect track outline and draw it on a new image
+        contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        cv.drawContours(track_outline, contours, 0, MAGENTA)
+
+        return track_outline
 
     def show(self):
         cv.imshow("Visualize", self.canvas)
