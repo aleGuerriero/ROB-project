@@ -15,10 +15,10 @@ class CameraProcessor:
     """
     def __init__(
             self,
-            show: bool = False
+            show_img: bool = False
     ) -> None:
         self.canvas = None
-        self.show = show
+        self.show_img = show_img
         self.cv_bridge = CvBridge()
 
     def process(
@@ -34,16 +34,18 @@ class CameraProcessor:
         Return:
             An ndarray with ...
         """
-        img = self._get_track_outline(
+        height, width, img = self._get_track_outline(
             self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
         )
         
         if self.show:
-            self.show(img)
+            if self.canvas is None:
+                self.canvas = img
+            self.show()
 
     def _get_track_outline(
             self,
-            img: np.array
+            img: np.array,
     ) -> np.ndarray:
         height, width, _ = img.shape
         track_outline = np.zeros((height, width), dtype=np.uint8)
@@ -53,7 +55,7 @@ class CameraProcessor:
         contours, _ = cv.findContours(img_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         cv.drawContours(track_outline, contours, 0, MAGENTA)
 
-        return track_outline
+        return height, width, track_outline
 
     def show(self):
         cv.imshow("Visualize", self.canvas)
