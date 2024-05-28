@@ -162,6 +162,7 @@ catkin_install_python(PROGRAMS
   scripts/colors.py
   src/cprocessor.py
   nodes/planner.py
+  nodes/control.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
