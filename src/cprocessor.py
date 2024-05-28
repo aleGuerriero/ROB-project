@@ -1,10 +1,8 @@
-#!/usr/bin/pyhton3
-
 from __future__ import annotations
 
 from cv_bridge import CvBridge
 
-from scripts.colors import mask, LOWER_YELLOW, UPPER_YELLOW, MAGENTA
+import scripts.colors as colors
 
 import numpy as np
 import cv2 as cv
@@ -39,8 +37,7 @@ class CameraProcessor:
         )
         
         if self.show:
-            if self.canvas is None:
-                self.canvas = img
+            self.canvas = img
             self.show()
 
     def _get_track_outline(
@@ -50,11 +47,11 @@ class CameraProcessor:
         img = img[int(img.shape[0]/2):img.shape[0]-10, 100:img.shape[1]-100]
         img = cv.resize(img, (640, 480))
         track_outline = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
-        img_mask = mask(img, np.array(LOWER_YELLOW), np.array(UPPER_YELLOW))
+        img_mask = colors.mask(img, np.array(colors.LOWER_YELLOW), np.array(colors.UPPER_YELLOW))
 
         # Detect track outline and draw it on a new image
         contours, _ = cv.findContours(img_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        cv.drawContours(track_outline, contours, 0, MAGENTA)
+        cv.drawContours(track_outline, contours, 0, colors.MAGENTA)
 
         return track_outline
 
