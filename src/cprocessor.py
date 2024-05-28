@@ -34,7 +34,6 @@ class CameraProcessor:
         Return:
             An ndarray with ...
         """
-    
         img = self._get_track_outline(
             self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
         )
@@ -48,10 +47,10 @@ class CameraProcessor:
     ) -> np.ndarray:
         height, width, _ = img.shape
         track_outline = np.zeros((height, width), dtype=np.uint8)
-        mask(img, np.array(LOWER_YELLOW), np.array(UPPER_YELLOW))
+        img_mask = mask(img, np.array(LOWER_YELLOW), np.array(UPPER_YELLOW))
 
         # Detect track outline and draw it on a new image
-        contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv.findContours(img_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         cv.drawContours(track_outline, contours, 0, MAGENTA)
 
         return track_outline

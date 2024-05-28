@@ -16,6 +16,7 @@ class PlannerNode:
         self.camera = CameraProcessor(self.debug)
 
         # Receive camera images
+        rospy.logdebug("SONO QUI")
         self.camera_sub = rospy.Subscriber(
             "car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )

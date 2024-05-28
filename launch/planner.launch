@@ -3,9 +3,9 @@
 <launch>
 
     <!-- Debugging flag-->
-    <arg name="debug" default="False"/>
+    <arg name="debug" default="True"/>
 
-    <node pkg="project" name="PlannerNode" type="nodes/planner.py">
+    <node pkg="project" name="PlannerNode" type="planner.py">
         <param name="debug" value="$(arg debug)"/>
     </node>
 </launch>
