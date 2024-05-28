@@ -161,6 +161,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/colors.py
   src/cprocessor.py
+  nodes/planner.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

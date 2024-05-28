@@ -4,7 +4,7 @@ import rospy
 import sensor_msgs
 import std_msgs
 
-from project.src.cprocessor import CameraProcessor
+from src.cprocessor import CameraProcessor
 
 class PlannerNode:
 
@@ -24,10 +24,10 @@ class PlannerNode:
 
     def _camera_callback(
             self,
-            msg
+            img_msg
     ) -> None:
         
-        self.camera.process(msg)
+        self.camera.process(img_msg)
 
 if __name__=='__main__':
     rospy.init_node("Planner")

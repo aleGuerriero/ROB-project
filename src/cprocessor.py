@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from cv_bridge import CvBridge
 
-from project.scripts.colors import mask, LOWER_YELLOW, UPPER_YELLOW, MAGENTA
+from scripts.colors import mask, LOWER_YELLOW, UPPER_YELLOW, MAGENTA
 
 import numpy as np
 import cv2 as cv

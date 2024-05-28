@@ -7,7 +7,6 @@ setup_args = generate_distutils_setup(
         "src",
         "scripts"
     ],
-    package_dir={"": "."}
 )
 
 setup(**setup_args)
