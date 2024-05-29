@@ -6,6 +6,7 @@ import scripts.colors as colors
 
 import numpy as np
 import cv2 as cv
+import math
 
 class CameraProcessor:
     """
@@ -35,10 +36,14 @@ class CameraProcessor:
         img = self._get_track_outline(
             self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
         )
+        centerline = self._get_centerline(img)
         
-        if self.show:
+        if self.show_img:
             self.canvas = img
+            self._draw_centerline(centerline)
             self.show()
+
+        return centerline
 
     def _get_track_outline(
             self,
@@ -54,6 +59,39 @@ class CameraProcessor:
         cv.drawContours(track_outline, contours, 0, colors.MAGENTA)
 
         return track_outline
+    
+    def _get_centerline(
+            self,
+            track_outline: np.ndarray
+    ) -> np.array:
+        centerline = []
+        left, right = self._get_track_limits(track_outline)
+        for (x1, y1), (x2, y2) in list(zip(left, right)):
+            xc = math.floor((x1+x2)/2)
+            yc = math.floor((y1+y2)/2)
+            centerline.append((xc, yc))
+        return np.array(centerline)
+
+    def _get_track_limits(
+            self,
+            track_outline: np.ndarray
+    ):
+        _, labels = cv.connectedComponents(track_outline)
+        left_limit = np.column_stack(
+            np.where(labels==1)
+        )
+        right_limit = np.column_stack(
+            np.where(labels==2)
+        )
+
+        return left_limit, right_limit
+    
+    def _draw_centerline(
+            self,
+            centerline: np.array
+    ) -> None:
+        for point in centerline:
+            cv.circle(self.canvas, point, colors.MAGENTA, 1)
 
     def show(self):
         cv.imshow("Visualize", self.canvas)
