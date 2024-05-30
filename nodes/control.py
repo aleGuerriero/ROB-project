@@ -4,7 +4,6 @@ import time
 from std_msgs.msg import String
 import rospy
 import std_msgs
-from std_msgs.msg import Float64, Float32
 
 MAX_VELOCITY = 5
 ADD_VELOCITY = 0.5
@@ -57,75 +56,58 @@ class ControlNode:
         self.time = 0
         self.setpoint = 0
         self.thrust = 0
+        self.error = 0
         
         rospy.loginfo("PID params: " )
 
-        self.r_wheel = rospy.Publisher('/car/front_right_velocity_controller/command', Float64, queue_size=10)
-        self.l_wheel = rospy.Publisher('/car/front_left_velocity_controller/command', Float64, queue_size=10)
+        self.r_wheel = rospy.Publisher('/car/front_right_velocity_controller/command', std_msgs.msg.Float64, queue_size=10)
+        self.l_wheel = rospy.Publisher('/car/front_left_velocity_controller/command', std_msgs.msg.Float64, queue_size=10)
         rospy.loginfo("Control nodes initialized")
 
-        self.sub = rospy.Subscriber("error", Float32, self.prova)
+        self.sub = rospy.Subscriber("/planner/error", std_msgs.msg.Float32, self._pid_callback)
 
         rospy.loginfo("Error subscribed")
-        return
     
-    def prova(self, error):
-        msg = Float64()
-        msg.data = 3
-        rospy.loginfo(f"Publishing velocity command: {msg.data}")
+    def _pid_callback(self, error):
+        msg = std_msgs.msg.Float64()
+
+        l_velocity, r_velocity = self._compute_velocity(
+            self._update_error(error.data)
+        )
+
+        msg.data = l_velocity
         self.r_wheel.publish(msg)
-            
-        msg.data = 1
-        rospy.loginfo(f"Publishing velocity command: {msg.data}")
+        msg.data = r_velocity
         self.r_wheel.publish(msg)
-       
-        rospy.loginfo("pubblicato r")
-        return
-    
 
 
-    def error_update(self, msg):
+    def _update_error(self, err):
 
-        '''error_data = msg
+        # Compute time
         current_time = time.time()
-
-        if (current_time==0):
-            return
-
         dt = current_time - self.time
         self.time = current_time
+
         # Compute PID output
-        P = self.P_value * error_data
-        I = self.I_value * self.accumulated_integral
-        D = self.D_value * (error_data - self.prev_error) / dt
-        control = P + I + D
-    '''
+        P = self.P_value * err
+        #I = self.I_value * self.accumulated_integral
+        D = self.D_value * (err - self.error) / dt
+        #control = P + I + D
+        control = P + D
+
+        return control
+
+    def _compute_velocity(
+            self,
+            control
+    ):
         if self.thrust < MAX_VELOCITY:
             self.thrust += ADD_VELOCITY
 
-        #right_velocity = self.thrust - TURNING * control
-        #left_velocity = self.thrust + TURNING * control'''
-        self.car_command(self.thrust, self.thrust)
-    
+        right_velocity = self.thrust - TURNING * control
+        left_velocity = self.thrust + TURNING * control
 
-    def car_command(self, right_velocity, left_velocity):
-        msg = std_msgs.msg.Float64()
-        msg.data = left_velocity
-        self.l_wheel.pub(msg)
-        msg.data = right_velocity
-        self.r_wheel.pub(msg)
-        rospy.loginfo("Command published")
-
-        """
-        Publish the comand with provided velocities.
-
-        Args:
-            right_velocity: right wheel speed
-            left_velocity: left wheel speed
-
-        Returns:
-            None
-        """
+        return right_velocity, left_velocity
 
     def stop(
             self

@@ -24,6 +24,7 @@ class CameraProcessor:
         self.canvas = None
         self.debug = debug
         self.cv_bridge = CvBridge()
+        self.crosshair = (self.width//2, self.height//2)
 
     def process(
             self,
@@ -47,7 +48,7 @@ class CameraProcessor:
             self._draw(left, right, centerline)
             self.show()
 
-        return centerline
+        return self.crosshair, centerline
 
     def _get_track_outline(
             self,

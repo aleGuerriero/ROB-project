@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from scripts.errors import ErrorType, ErrorTypeException
+from scripts import utils
+import numpy as np
+
+import math
 
 class PathFollowing:
 
@@ -22,14 +26,12 @@ class PathFollowing:
     def plan(
             self,
             pos: tuple[int, int],
-            path: tuple[int, int]
+            trajectory: np.array
     ) -> None:
         """
         Method that implements the planning strategy.
 
         Args:
             pos: An approximate position of the position of the car.
+            trajectory: the desired trajectory to follow (centerline).
         """
-        pass
-
-    
