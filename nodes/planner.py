@@ -12,7 +12,8 @@ class PlannerNode:
             self,
     ) -> None:
         
-        self.debug = rospy.get_param("project/PlannerNode/debug", False)
+        self.debug = rospy.get_param("project/PlannerNode/debug", True)
+        rospy.loginfo(self.debug)
         self.camera = CameraProcessor(self.debug)
 
         # Receive camera images
@@ -27,10 +28,11 @@ class PlannerNode:
             img_msg
     ) -> None:
         
-        self.camera.process(img_msg)
+        centerline = self.camera.process(img_msg)
+        rospy.loginfo(centerline)
 
 if __name__=='__main__':
-    rospy.init_node("Planner")
+    rospy.init_node("PlannerNode")
     PlannerNode()
     rospy.spin()
     rospy.loginfo("Planner node shutting down")
