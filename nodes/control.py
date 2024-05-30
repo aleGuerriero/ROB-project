@@ -64,46 +64,23 @@ class ControlNode:
         self.l_wheel = rospy.Publisher('/car/front_left_velocity_controller/command', Float64, queue_size=10)
         rospy.loginfo("Control nodes initialized")
 
-        # Imposta la frequenza di pubblicazione a 10 Hz
-        rate = rospy.Rate(10) # 10 Hz
-        msg = Float64()
-
-        while not rospy.is_shutdown():            
-
-            msg.data = 3
-            rospy.loginfo(f"Publishing velocity command: {msg.data}")
-            self.r_wheel.publish(msg)
-            
-            msg.data = 1
-            rospy.loginfo(f"Publishing velocity command: {msg.data}")
-            self.r_wheel.publish(msg)
-            
-            # Dorme per mantenere il loop alla frequenza desiderata
-            rate.sleep()
-        
-        #self.prova()
-        
         self.sub = rospy.Subscriber("error", Float32, self.prova)
 
         rospy.loginfo("Error subscribed")
         return
     
-    def prova(self):
-
+    def prova(self, error):
+        msg = Float64()
         msg.data = 3
         rospy.loginfo(f"Publishing velocity command: {msg.data}")
         self.r_wheel.publish(msg)
-
-
-
-        msg = std_msgs.msg.Float64()
-        msg.data = 1.0
-        rospy.loginfo("pubblico l")
-        self.l_wheel.publish(msg)
-        rospy.loginfo("pubblicato l")
-        msg.data = 3.0
+            
+        msg.data = 1
+        rospy.loginfo(f"Publishing velocity command: {msg.data}")
         self.r_wheel.publish(msg)
+       
         rospy.loginfo("pubblicato r")
+        return
     
 
 

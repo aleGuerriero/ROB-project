@@ -3,6 +3,7 @@
 import rospy
 import sensor_msgs
 import std_msgs
+from std_msgs.msg import Float64, Float32
 
 from src.cprocessor import CameraProcessor
 
@@ -21,6 +22,8 @@ class PlannerNode:
             "car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
+        self.error_pub = rospy.Publisher("error", Float32, queue_size=10)
+
         rospy.loginfo("Planner initialized")
 
     def _camera_callback(
@@ -30,6 +33,13 @@ class PlannerNode:
         
         centerline = self.camera.process(img_msg)
         rospy.loginfo(centerline)
+
+        #invia l'errore al control node (da calcolare)
+        err_msg = Float32()
+        err_msg.data = 5
+        self.error_pub.publish(err_msg)
+        rospy.loginfo("error published")
+        
 
 if __name__=='__main__':
     rospy.init_node("PlannerNode")
