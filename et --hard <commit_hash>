@@ -1,0 +1,59 @@
+[33mcommit e1a6f3971a69a82f507d1aeb0643db557c0bd309[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Wed May 29 15:34:06 2024 +0200
+
+    Added centerline processor
+
+[33mcommit 5fe9ae062c74d64f648500986b12ab1e88c5cf57[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 19:11:00 2024 +0200
+
+    Added strategies templates
+
+[33mcommit 50c983b1cc947af878e6cc857fed8f0992f6c2f2[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 18:33:38 2024 +0200
+
+    Fixed again planner node
+
+[33mcommit 07ff1528ebaae75fff17e47b88cac6790ac62a70[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 18:14:39 2024 +0200
+
+    Added template for control node
+
+[33mcommit aa6082a9e2829dbc29995f0468ff74886082d482[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 17:03:05 2024 +0200
+
+    Visualization working
+
+[33mcommit c66435b452f1ba9c40a6604deae61217973dea7a[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 16:30:44 2024 +0200
+
+    Fixed import colors.py
+
+[33mcommit 94f41b4e6626f10e21b30bbba4f4fd1761abbd07[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Tue May 28 12:41:17 2024 +0200
+
+    Fixed pyhton dependecies
+
+[33mcommit 872f30a50bd6a5b99f4b7cd24778a7e8e3a28311[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Mon May 27 23:39:21 2024 +0200
+
+    First serious commit. DOES NOT WORK
+
+[33mcommit a174a66f3162f3afcaf17ea308d89c9b9d073b20[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Mon May 27 18:59:24 2024 +0200
+
+    Fixed package dependecies
+
+[33mcommit 36c40af6adc143c5246719656e113cfbcb7fb0af[m
+Author: ale <alessandro.guerriero@live.it>
+Date:   Mon May 27 16:15:27 2024 +0200
+
+    first commit

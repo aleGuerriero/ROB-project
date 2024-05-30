@@ -4,7 +4,7 @@ import time
 from std_msgs.msg import String
 import rospy
 import std_msgs
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float32
 
 MAX_VELOCITY = 5
 ADD_VELOCITY = 0.5
@@ -83,12 +83,19 @@ class ControlNode:
         
         #self.prova()
         
-        #self.sub = rospy.Subscriber("error", std_msgs.msg.Float32, self.error_update)
+        self.sub = rospy.Subscriber("error", Float32, self.prova)
 
         rospy.loginfo("Error subscribed")
         return
     
     def prova(self):
+
+        msg.data = 3
+        rospy.loginfo(f"Publishing velocity command: {msg.data}")
+        self.r_wheel.publish(msg)
+
+
+
         msg = std_msgs.msg.Float64()
         msg.data = 1.0
         rospy.loginfo("pubblico l")
