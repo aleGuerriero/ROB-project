@@ -5,43 +5,9 @@ from std_msgs.msg import String
 import rospy
 import std_msgs
 
-MAX_VELOCITY = 5
-ADD_VELOCITY = 0.5
-TURNING = 5 
-
-'''import rospy
-from std_msgs.msg import Float64
-
-def publish_velocity():
-    # Inizializza il nodo ROS
-    rospy.init_node('velocity_publisher', anonymous=True)
-    
-    # Crea un publisher per il topic specificato
-    pub = rospy.Publisher('/car/front_right_velocity_controller/command', Float64, queue_size=10)
-    
-    # Imposta la frequenza di pubblicazione a 10 Hz
-    rate = rospy.Rate(10) # 10 Hz
-    
-    # Crea un messaggio Float64
-    velocity_command = Float64()
-    velocity_command.data = 3.0
-    
-    # Pubblica il messaggio finché ROS è attivo
-    while not rospy.is_shutdown():
-        # Log del messaggio per debug
-        rospy.loginfo(f"Publishing velocity command: {velocity_command.data}")
-        
-        # Pubblica il messaggio
-        pub.publish(velocity_command)
-        
-        # Dorme per mantenere il loop alla frequenza desiderata
-        rate.sleep()
-
-if __name__ == '__main__':
-    try:
-        publish_velocity()
-    except rospy.ROSInterruptException:
-        pass'''
+MAX_VELOCITY = 6
+ADD_VELOCITY = 0.05
+TURNING = 6
 
 class ControlNode:
 
@@ -49,12 +15,12 @@ class ControlNode:
             self,
     ) -> None:
         
-        self.P_value = rospy.get_param("control/P_value", 1)
-        self.I_value = rospy.get_param("control/I_value", 1)
-        self.D_value = rospy.get_param("control/D_value", 1)
-
+        self.KP_value = rospy.get_param("control/P_value", 1)
+        self.KI_value = rospy.get_param("control/I_value", 1)
+        self.KD_value = rospy.get_param("control/D_value", 1)
+        self.prev_error = 0.0
         self.time = 0
-        self.setpoint = 0
+        self.integral = 0.0
         self.thrust = 0
         self.error = 0
         
