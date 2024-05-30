@@ -7,8 +7,11 @@ import scripts.colors as colors
 import numpy as np
 import cv2 as cv
 import math
+<<<<<<< HEAD
 
 import rospy
+=======
+>>>>>>> main
 
 class CameraProcessor:
     """
@@ -41,10 +44,18 @@ class CameraProcessor:
         img = self._get_track_outline(
             self.cv_bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
         )
+<<<<<<< HEAD
         left, right, centerline = self._get_centerline(img)
         
         if self.debug:
             self._draw(left, right, centerline)
+=======
+        centerline = self._get_centerline(img)
+        
+        if self.show_img:
+            self.canvas = img
+            self._draw_centerline(centerline)
+>>>>>>> main
             self.show()
 
         return centerline
