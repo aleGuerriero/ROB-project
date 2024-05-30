@@ -1,11 +1,11 @@
-<!-- launches the planner node-->
+<!-- launches the control node-->
 
 <launch>
 
     <!-- Debugging flag-->
     <arg name="debug" default="True"/>
 
-    <node pkg="project" name="PlannerNode" type="planner.py">
+    <node pkg="project" name="ControlNode" type="control.py">
         <param name="debug" value="$(arg debug)"/>
     </node>
 
