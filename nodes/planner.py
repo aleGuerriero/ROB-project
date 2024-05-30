@@ -36,7 +36,7 @@ class PlannerNode:
 
         #invia l'errore al control node (da calcolare)
         err_msg = Float32()
-        err_msg.data = 5
+        err_msg.data = 5.0
         self.error_pub.publish(err_msg)
         rospy.loginfo("error published")
         
