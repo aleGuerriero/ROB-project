@@ -71,15 +71,15 @@ class ControlNode:
     
     def prova(self, error):
         msg = Float64()
-        msg.data = 3
+
+        msg.data = 0.5
         rospy.loginfo(f"Publishing velocity command: {msg.data}")
         self.r_wheel.publish(msg)
-            
-        msg.data = 1
+
+        msg.data = 0.7
         rospy.loginfo(f"Publishing velocity command: {msg.data}")
-        self.r_wheel.publish(msg)
-       
-        rospy.loginfo("pubblicato r")
+        self.l_wheel.publish(msg)
+
         return
     
 
