@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
 import time
-from std_msgs.msg import String
 import rospy
 import std_msgs
 
-MAX_VELOCITY = 6
-ADD_VELOCITY = 0.05
-TURNING = 6
+MAX_VELOCITY = 10
+ADD_VELOCITY = 0.2
+TURNING = 5
 
 class ControlNode:
 
@@ -15,10 +14,9 @@ class ControlNode:
             self,
     ) -> None:
         
-        self.KP_value = rospy.get_param("control/P_value", 1)
-        self.KI_value = rospy.get_param("control/I_value", 1)
-        self.KD_value = rospy.get_param("control/D_value", 1)
-        self.prev_error = 0.0
+        self.P_value = rospy.get_param("control/P_value", 1)
+        self.I_value = rospy.get_param("control/I_value", 1)
+        self.D_value = rospy.get_param("control/D_value", 1)
         self.time = 0
         self.integral = 0.0
         self.thrust = 0
@@ -54,12 +52,18 @@ class ControlNode:
         dt = current_time - self.time
         self.time = current_time
 
+        # Compute integral
+        self.integral += dt * (err + self.error) / 2
+
         # Compute PID output
         P = self.P_value * err
-        #I = self.I_value * self.accumulated_integral
-        D = self.D_value * (err - self.error) / dt
+        #I = self.I_value * self.integral
+        #D = self.D_value * (err - self.error) / dt
         #control = P + I + D
-        control = P + D
+        control = P
+ 
+        rospy.loginfo(f'err: {err}')
+        rospy.loginfo(f'control: {control}')
 
         return control
 

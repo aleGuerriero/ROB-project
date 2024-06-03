@@ -41,8 +41,8 @@ class PlannerNode:
 
         #invia l'errore al control node (da calcolare)
         err_msg = std_msgs.msg.Float32()
-        errx, erry, errtheta = self.strategy.plan(pos, centerline)
-        err_msg.data = errx
+        errx, errtheta = self.strategy.plan(pos, centerline)
+        err_msg.data = errx/320 - 1
         self.error_pub.publish(err_msg)
         rospy.loginfo("error published")
         
