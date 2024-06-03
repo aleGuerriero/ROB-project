@@ -25,7 +25,7 @@ class TrajectoryTracking:
         prx, pry = TrajectoryTracking._closest_point(pos, trajectory)
         theta = utils.get_angle(pos, (prx, pry))
         
-        return posx-prx, posy-pry, theta
+        return posx-prx, theta
 
     @staticmethod
     def _closest_point(

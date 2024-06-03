@@ -6,6 +6,7 @@ import std_msgs
 
 from src.cprocessor import CameraProcessor
 from src.strategies import TrajectoryTracking
+from project.msg._Error_msg import Error_msg
 
 class PlannerNode:
 
@@ -27,7 +28,7 @@ class PlannerNode:
             "car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("/planner/error", std_msgs.msg.Float32, queue_size=1)
+        self.error_pub = rospy.Publisher("/planner/error", Error_msg, queue_size=1)
 
         rospy.loginfo("Planner initialized")
 
@@ -40,9 +41,12 @@ class PlannerNode:
         rospy.loginfo(centerline)
 
         #invia l'errore al control node (da calcolare)
-        err_msg = std_msgs.msg.Float32()
+        err_msg = Error_msg()
         errx, errtheta = self.strategy.plan(pos, centerline)
-        err_msg.data = errx/320 - 1
+        rospy.loginfo(f'Computed x: {errx}, theta: {errtheta}')
+        err_msg.errx = (errx + 639)/639 - 1
+        err_msg.errtheta = errtheta
+        rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
         self.error_pub.publish(err_msg)
         rospy.loginfo("error published")
         
