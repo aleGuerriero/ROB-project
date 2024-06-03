@@ -37,13 +37,15 @@ class ControlNode:
     
     def _pid_callback(self, error):
         x, theta = self._update_error(error.errx, error.errtheta)
+        rospy.loginfo(f'error updated')
         l_velocity, r_velocity = self._compute_velocity(x, theta)
-
+        rospy.loginfo(f'velocities computed')
         msg = std_msgs.msg.Float64()
         msg.data = l_velocity
         self.l_wheel.publish(msg)
         msg.data = r_velocity
         self.r_wheel.publish(msg)
+        rospy.loginfo(f'velocities published')
 
 
     def _update_error(self, errx, errtheta):
@@ -86,6 +88,9 @@ class ControlNode:
 
         right_velocity = self.velocity - o
         left_velocity = self.velocity + o
+
+        right_velocity = 5
+        left_velocity = 6
 
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 
