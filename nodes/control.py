@@ -24,7 +24,7 @@ class ControlNode:
         self.D_value = rospy.get_param("control/kd", 0)
         self.time = 0
         self.integral = 0.0
-        self.velocity = 0
+        self.velocity = 1
         self.error = 0
         
         rospy.loginfo("PID params: " )
