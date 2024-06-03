@@ -11,15 +11,17 @@ from project.msg._Error_msg import Error_msg
 MAX_VELOCITY = 10
 ADD_VELOCITY = 0.2
 
+TURNING = 5
+
 class ControlNode:
 
     def __init__(
             self,
     ) -> None:
         
-        self.P_value = rospy.get_param("control/P_value", 1)
-        self.I_value = rospy.get_param("control/I_value", 1)
-        self.D_value = rospy.get_param("control/D_value", 1)
+        self.P_value = rospy.get_param("control/kp", 1)
+        self.I_value = rospy.get_param("control/ki", 0)
+        self.D_value = rospy.get_param("control/kd", 0)
         self.time = 0
         self.integral = 0.0
         self.velocity = 0
@@ -79,15 +81,16 @@ class ControlNode:
             x,
             theta
     ):
-        o = self.velocity/x
+        v = self.velocity/math.cos(theta)
+        o = TURNING*x
 
         if self.velocity < MAX_VELOCITY:
             self.velocity += ADD_VELOCITY
 
         rospy.loginfo(f'v: {self.velocity}, omega: {o}')
 
-        right_velocity = self.velocity - o
-        left_velocity = self.velocity + o
+        right_velocity = v - o
+        left_velocity = v + o
 
         right_velocity = 5
         left_velocity = 6
