@@ -1,11 +1,16 @@
 #!/usr/bin/python3
 
+import random
 import rospy
 import sensor_msgs
 import std_msgs
 from std_msgs.msg import Float64, Float32
 
 from src.cprocessor import CameraProcessor
+from src.strategies import TrajectoryTracking
+from project.msg._Error_msg import Error_msg
+import std_msgs.msg
+from src.plotter import Plotter
 
 class PlannerNode:
 
@@ -26,7 +31,11 @@ class PlannerNode:
             "/car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("planner/error", Error_msg, queue_size=1)
+        self.error_pub = rospy.Publisher("/planner/error", Error_msg, queue_size=1)
+
+        self.plot = Plotter()
+
+        
 
         rospy.loginfo("Planner initialized")
 
@@ -44,10 +53,15 @@ class PlannerNode:
         err_msg.errtheta = errtheta
         rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
         self.error_pub.publish(err_msg)
-
-        if self.debug:
+        
+        #Plot       
+        self.plot.plot_errors(errx, errtheta)
+    
+        if True:
             self.camera.draw(pos, crosshair, waypoint)
             self.camera.show()
+
+    
         
 
 if __name__=='__main__':
