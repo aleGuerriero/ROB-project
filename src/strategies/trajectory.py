@@ -20,6 +20,7 @@ class TrajectoryTracking:
     def plan(
             self,
             pos: tuple[int, int],
+            width: int,
             trajectory: np.array
     ):
         
@@ -27,7 +28,8 @@ class TrajectoryTracking:
         rospy.loginfo(f'crosshair: {posx}, {posy}')
         pry, prx = TrajectoryTracking._closest_point(pos, trajectory)
         errtheta, theta = utils.get_angle(pos, (prx, pry))
-        errx = posx-prx
+        x = posx-prx
+        errx = (x + width/2)/(width/2) - 1
         
         return (prx, pry), errx, errtheta
 
@@ -50,10 +52,8 @@ class TrajectoryTracking:
             dist = math.sqrt(
                 pow(posx-x, 2) + pow(posy-y, 2)
             )
-            rospy.loginfo(f'point: ({x}, {y}), dist: {dist}')
             if dist < closest_dist:
                 closest_dist = dist
                 closest = i
-            rospy.loginfo(f'selected point: {trajectory[closest]}')
         
         return trajectory[closest]

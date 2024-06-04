@@ -40,7 +40,7 @@ class PlannerNode:
 
         #invia l'errore al control node (da calcolare)
         err_msg = Error_msg()
-        waypoint, errx, errtheta = self.strategy.plan(crosshair, centerline)
+        waypoint, errx, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
         err_msg.errx = errx
         err_msg.errtheta = errtheta
         rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')

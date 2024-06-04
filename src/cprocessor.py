@@ -120,6 +120,10 @@ class CameraProcessor:
             colors.RED
         )
 
+    @classmethod
+    def width(self):
+        return self.width
+
     def show(self):
         cv.imshow("Visualize", self.canvas)
         cv.waitKey(1)
