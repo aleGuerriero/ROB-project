@@ -7,6 +7,7 @@ import std_msgs
 import math
 
 from project.msg._Error_msg import Error_msg
+from src.plotter import Plotter
 
 MAX_VELOCITY = 10
 ADD_VELOCITY = 0.2
@@ -36,6 +37,8 @@ class ControlNode:
         self.sub = rospy.Subscriber("/planner/error", Error_msg, self._pid_callback)
 
         rospy.loginfo("Error subscribed")
+
+        self.plot = Plotter()
     
     def _pid_callback(self, error):
         x, theta = self._update_error(error.errx, error.errtheta)
@@ -91,16 +94,22 @@ class ControlNode:
         right_velocity = v + o
         left_velocity = v - o
 
+        self.plot.plot_velocities(right_velocity, left_velocity)
+
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 
         return right_velocity, left_velocity
 
-    def stop(
-            self
-    ) -> None:
-        
+    def stop(self):
+        msg = std_msgs.msg.Float64()
+        msg.data = 0
+        # Send the messages multiple times since they are not
+        #   guaranteed to be delivered. Ugly, but it seems to work.
+        for _ in range(10):
+            self.l_wheel.publish(msg)
+            self.r_wheel.publish(msg)
 
-        pass
+        rospy.loginfo("Control node shutting down.")
 
 if __name__=='__main__':
     rospy.init_node("Control", anonymous=True)
@@ -108,4 +117,4 @@ if __name__=='__main__':
     rospy.loginfo("Control nodes")
     rospy.on_shutdown(node.stop)
     rospy.spin()
-    rospy.loginfo("Control node shutting down")
+    
