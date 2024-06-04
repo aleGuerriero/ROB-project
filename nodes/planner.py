@@ -20,7 +20,6 @@ class PlannerNode:
         if self.strategy_param=="trajectory":
             self.strategy = TrajectoryTracking()
 
-        rospy.loginfo(self.debug)
         self.camera = CameraProcessor(self.debug)
 
         # Receive camera images
@@ -37,18 +36,19 @@ class PlannerNode:
             img_msg
     ) -> None:
         
-        pos, centerline = self.camera.process(img_msg)
-        rospy.loginfo(centerline)
+        pos, crosshair, centerline = self.camera.process(img_msg)
 
         #invia l'errore al control node (da calcolare)
         err_msg = Error_msg()
-        errx, errtheta = self.strategy.plan(pos, centerline)
-        rospy.loginfo(f'Computed x: {errx}, theta: {errtheta}')
-        err_msg.errx = (errx + 639)/639 - 1
+        waypoint, errx, errtheta = self.strategy.plan(crosshair, centerline)
+        err_msg.errx = errx
         err_msg.errtheta = errtheta
         rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
         self.error_pub.publish(err_msg)
-        rospy.loginfo("error published")
+
+        if True:
+            self.camera.draw(pos, crosshair, waypoint)
+            self.camera.show()
         
 
 if __name__=='__main__':

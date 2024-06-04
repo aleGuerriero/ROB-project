@@ -5,6 +5,8 @@ from scripts import utils
 import numpy as np
 import math
 
+import rospy
+
 class TrajectoryTracking:
     """
     Class that implements a trajectory tracking strategy
@@ -22,31 +24,36 @@ class TrajectoryTracking:
     ):
         
         posx, posy = pos
-        prx, pry = TrajectoryTracking._closest_point(pos, trajectory)
-        theta = utils.get_angle(pos, (prx, pry))
+        rospy.loginfo(f'crosshair: {posx}, {posy}')
+        pry, prx = TrajectoryTracking._closest_point(pos, trajectory)
+        errtheta, theta = utils.get_angle(pos, (prx, pry))
+        errx = posx-prx
         
-        return posx-prx, theta
+        return (prx, pry), errx, errtheta
 
     @staticmethod
     def _closest_point(
             pos: tuple[int, int],
             trajectory: np.array
     ) -> tuple[int, int]:
+        if trajectory.size == 0:
+            return pos
+        
         posx, posy = pos
 
         closest_dist = float("inf")
         closest = 0
-        for i, (x, y) in enumerate(trajectory):
+        for i, (y, x) in enumerate(trajectory):
+            if y > posy-30:
+                continue
+
             dist = math.sqrt(
                 pow(posx-x, 2) + pow(posy-y, 2)
             )
-            if closest_dist > dist:
+            rospy.loginfo(f'point: ({x}, {y}), dist: {dist}')
+            if dist < closest_dist:
+                closest_dist = dist
                 closest = i
+            rospy.loginfo(f'selected point: {trajectory[closest]}')
         
         return trajectory[closest]
-
-    def _compute_velocity(
-            self
-    ):
-        pass
-    

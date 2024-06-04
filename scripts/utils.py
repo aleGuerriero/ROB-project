@@ -19,4 +19,4 @@ def get_angle(
     angle = math.asin((p1[0]-p[0])/d)
     deg = angle*180/math.pi
 
-    return deg
+    return (deg+90)/90-1, deg

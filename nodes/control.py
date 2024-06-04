@@ -79,16 +79,16 @@ class ControlNode:
             x,
             theta
     ):
-        v = self.velocity
-        o = self.velocity*x
-
         if self.velocity < MAX_VELOCITY:
             self.velocity += ADD_VELOCITY
+    
+        v = self.velocity
+        o = TURNING*theta
 
         rospy.loginfo(f'v: {v}, omega: {o}')
 
-        right_velocity = v - o
-        left_velocity = v + o
+        right_velocity = v + o
+        left_velocity = v - o
 
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 
