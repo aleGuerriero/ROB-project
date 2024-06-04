@@ -5,8 +5,6 @@ from scripts import utils
 import numpy as np
 import math
 
-import rospy
-
 class TrajectoryTracking:
     """
     Class that implements a trajectory tracking strategy
@@ -25,7 +23,6 @@ class TrajectoryTracking:
     ):
         
         posx, posy = pos
-        rospy.loginfo(f'crosshair: {posx}, {posy}')
         pry, prx = TrajectoryTracking._closest_point(pos, trajectory)
         errtheta, theta = utils.get_angle(pos, (prx, pry))
         x = posx-prx

@@ -14,9 +14,9 @@ class PlannerNode:
             self,
     ) -> None:
         
-        self.debug = rospy.get_param("project/PlannerNode/debug", True)
+        self.debug = rospy.get_param("/project/PlannerNode/debug", False)
 
-        self.strategy_param = rospy.get_param("project/PlannerNode/strategy", "trajectory")
+        self.strategy_param = rospy.get_param("/project/PlannerNode/strategy", "trajectory")
         if self.strategy_param=="trajectory":
             self.strategy = TrajectoryTracking()
 
@@ -24,10 +24,10 @@ class PlannerNode:
 
         # Receive camera images
         self.camera_sub = rospy.Subscriber(
-            "car/image_raw", sensor_msgs.msg.Image, self._camera_callback
+            "/car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("/planner/error", Error_msg, queue_size=1)
+        self.error_pub = rospy.Publisher("planner/error", Error_msg, queue_size=1)
 
         rospy.loginfo("Planner initialized")
 
@@ -46,7 +46,7 @@ class PlannerNode:
         rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
         self.error_pub.publish(err_msg)
 
-        if True:
+        if self.debug:
             self.camera.draw(pos, crosshair, waypoint)
             self.camera.show()
         
