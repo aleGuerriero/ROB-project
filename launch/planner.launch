@@ -8,7 +8,7 @@
     <!-- Strategy flag: [trajectory, path]-->
     <arg name="strategy" default="trajectory"/>
 
-    <node pkg="project" name="PlannerNode" type="planner.py">
+    <node pkg="project" name="PlannerNode" type="planner.py" ns="project">
         <param name="debug" value="$(arg debug)"/>
         <param name="strategy" value="$(arg strategy)"/>
     </node>

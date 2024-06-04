@@ -8,9 +8,13 @@
     <!-- Strategy flag-->
     <arg name="strategy" default="trajectory"/>
 
+    <!-- Error flag-->
+    <arg name="err" default="nonlinear"/>
+
     <!-- Control node-->
     <include file="$(find project)/launch/control.launch">
         <arg name="debug" value="$(arg debug)"/>
+        <arg name="err" value="$(arg err)"/>
     </include>
 
     <!-- Planner node-->

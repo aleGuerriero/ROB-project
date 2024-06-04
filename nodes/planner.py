@@ -13,16 +13,20 @@ class PlannerNode:
             self,
     ) -> None:
         
-        self.debug = rospy.get_param("project/PlannerNode/debug", True)
-        rospy.loginfo(self.debug)
+        self.debug = rospy.get_param("/project/PlannerNode/debug", False)
+
+        self.strategy_param = rospy.get_param("/project/PlannerNode/strategy", "trajectory")
+        if self.strategy_param=="trajectory":
+            self.strategy = TrajectoryTracking()
+
         self.camera = CameraProcessor(self.debug)
 
         # Receive camera images
         self.camera_sub = rospy.Subscriber(
-            "car/image_raw", sensor_msgs.msg.Image, self._camera_callback
+            "/car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("error", Float32, queue_size=10)
+        self.error_pub = rospy.Publisher("planner/error", Error_msg, queue_size=1)
 
         rospy.loginfo("Planner initialized")
 
@@ -31,14 +35,19 @@ class PlannerNode:
             img_msg
     ) -> None:
         
-        centerline = self.camera.process(img_msg)
-        rospy.loginfo(centerline)
+        pos, crosshair, centerline = self.camera.process(img_msg)
 
         #invia l'errore al control node (da calcolare)
-        err_msg = Float32()
-        err_msg.data = 5.0
+        err_msg = Error_msg()
+        waypoint, errx, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
+        err_msg.errx = errx
+        err_msg.errtheta = errtheta
+        rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
         self.error_pub.publish(err_msg)
-        rospy.loginfo("error published")
+
+        if self.debug:
+            self.camera.draw(pos, crosshair, waypoint)
+            self.camera.show()
         
 
 if __name__=='__main__':

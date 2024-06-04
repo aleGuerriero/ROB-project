@@ -18,35 +18,39 @@ class TrajectoryTracking:
     def plan(
             self,
             pos: tuple[int, int],
+            width: int,
             trajectory: np.array
     ):
         
         posx, posy = pos
-        prx, pry = TrajectoryTracking._closest_point(pos, trajectory)
-        theta = utils.get_angle(pos, (prx, pry))
+        pry, prx = TrajectoryTracking._closest_point(pos, trajectory)
+        errtheta, theta = utils.get_angle(pos, (prx, pry))
+        x = posx-prx
+        errx = (x + width/2)/(width/2) - 1
         
-        return posx-prx, theta
+        return (prx, pry), errx, errtheta
 
     @staticmethod
     def _closest_point(
             pos: tuple[int, int],
             trajectory: np.array
     ) -> tuple[int, int]:
+        if trajectory.size == 0:
+            return pos
+        
         posx, posy = pos
 
         closest_dist = float("inf")
         closest = 0
-        for i, (x, y) in enumerate(trajectory):
+        for i, (y, x) in enumerate(trajectory):
+            if y > posy-30:
+                continue
+
             dist = math.sqrt(
                 pow(posx-x, 2) + pow(posy-y, 2)
             )
-            if closest_dist > dist:
+            if dist < closest_dist:
+                closest_dist = dist
                 closest = i
         
         return trajectory[closest]
-
-    def _compute_velocity(
-            self
-    ):
-        pass
-    
