@@ -1,0 +1,22 @@
+
+<launch>
+
+    <!-- Debugging flag-->
+    <arg name="debug" default="False"/>
+
+    <!-- Strategy flag-->
+    <arg name="strategy" default="trajectory"/>
+
+    <!-- Error flag-->
+    <arg name="err" default="nonlinear"/>
+
+    <!-- Planner node-->
+    <include file="$(find project)/launch/planner.launch">
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="strategy" value="$(arg strategy)"/>
+    </include>
+
+    <!-- Simulation-->
+    <include file="$(find line_tracking_race)/launch/race_track.launch"/>
+
+</launch>

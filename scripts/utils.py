@@ -1,7 +1,7 @@
 from __future__ import annotations
-
+import matplotlib.pyplot as plt
 import numpy as np
-
+import pandas as pd
 import math
 
 def get_angle(
@@ -20,3 +20,10 @@ def get_angle(
     deg = angle*180/math.pi
 
     return (deg+90)/90-1, deg
+
+def distance(pos, postarget):
+    posx, posy = pos
+    postargetx, postargety = postarget
+    return np.sqrt(
+        (posx - postargetx)**2 + (posy - postargety)**2 
+    )

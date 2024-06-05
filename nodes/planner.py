@@ -31,7 +31,7 @@ class PlannerNode:
             "/car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("/planner/error", Error_msg, queue_size=1)
+        self.error_pub = rospy.Publisher("planner/error", Error_msg, queue_size=1)
 
         self.plot = Plotter()
 
@@ -61,8 +61,6 @@ class PlannerNode:
             self.camera.draw(pos, crosshair, waypoint)
             self.camera.show()
 
-    
-        
 
 if __name__=='__main__':
     rospy.init_node("PlannerNode")
