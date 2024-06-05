@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import rospy
 import std_msgs
-
 import numpy as np
 from project.msg._Error_msg import Error_msg
 from src.plotter import Plotter
 from scripts.errors import ErrorType, ErrorTypeException
+import std_msgs.msg
 
 MAX_VELOCITY = 3
 ADD_VELOCITY = 0.2
@@ -32,7 +32,6 @@ class ControlNode:
             raise ErrorTypeException
         else:
             self.error_type = _Errors[error_type]
-
         
         self.P_value = rospy.get_param("/project/ControlNode/kp", 1)
         self.I_value = rospy.get_param("/project/ControlNode/ki", 0)
@@ -47,6 +46,8 @@ class ControlNode:
         self.dtheta_integral = 0.0
 
         self.running = False
+
+        self.act_vel = [0.0,0.0]
         
         rospy.loginfo(f'Error type: {self.error_type}')
         rospy.loginfo(f"PID params: {self.P_value}, {self.I_value}, {self.D_value}" )
@@ -55,26 +56,44 @@ class ControlNode:
         self.l_wheel = rospy.Publisher('/car/front_left_velocity_controller/command', std_msgs.msg.Float64, queue_size=10)
         rospy.loginfo("Control nodes initialized")
 
+        self.isgoing = False
+        self.started = False
+
+        self.plot = Plotter()
+            
         self.sub = rospy.Subscriber("planner/error", Error_msg, self._pid_callback, queue_size=1)
 
         rospy.loginfo("Error subscribed")
 
-        self.plot = Plotter()
+    def start(self, msg):
+        if (msg.data == True):
+            self.isgoing = True
+        return
     
     def _pid_callback(
             self,
             error: Error_msg
-    ) -> None:
+    ) -> None:        
+
         errx, errtheta = self._update_error(error)
-        
         l_velocity, r_velocity = self._compute_velocity(errx, errtheta)
+
+
+        #ac = rospy.Subscriber("/car/joint_states", sensor_msgs.msg.JointState, self.compute_act_velocity)
+        #self.plot.plot_velocities(r_velocity, l_velocity, MAX_VELOCITY, self.act_vel)
 
         msg = std_msgs.msg.Float64()
         msg.data = l_velocity
         self.l_wheel.publish(msg)
         msg.data = r_velocity
         self.r_wheel.publish(msg)
-
+        rospy.loginfo(f'velocities published')
+    
+    def compute_act_velocity(self, a):
+        self.act_vel[0] = a.velocity[0]
+        self.act_vel[1] = a.velocity[1]
+        rospy.loginfo(f'l: {self.act_vel[0]} r: {self.act_vel[1]}')
+        return
 
     def _update_error(
             self, 
@@ -142,10 +161,11 @@ class ControlNode:
         if self.error_type is ErrorType.NON_LINEAR:
             eq = errtheta - errx*self.velocity*np.sinc(errtheta)
 
+
         right_velocity = (2*self.velocity - WHEELD*eq)/(2*WHEELR)
         left_velocity = (2*self.velocity + WHEELD*eq)/(2*WHEELR)
         
-        self.plot.plot_velocities(right_velocity, left_velocity)
+        self.plot.plot_velocities(right_velocity, left_velocity, MAX_VELOCITY)
 
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 
@@ -159,6 +179,7 @@ class ControlNode:
         for _ in range(10):
             self.l_wheel.publish(msg)
             self.r_wheel.publish(msg)
+        
 
         rospy.loginfo("Control node shutting down.")
 
@@ -166,5 +187,8 @@ if __name__=='__main__':
     rospy.init_node("ControlNode")
     node = ControlNode()
     rospy.loginfo("Control nodes")
+    rospy.on_shutdown(node.stop)
     rospy.spin()
+
+    
     

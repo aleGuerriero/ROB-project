@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-
 import math
 
 def get_angle(
@@ -20,3 +19,10 @@ def get_angle(
     deg = angle*180/math.pi
 
     return 2*(deg+90)/180-1, deg
+
+def distance(pos, postarget):
+    posx, posy = pos
+    postargetx, postargety = postarget
+    return np.sqrt(
+        (posx - postargetx)**2 + (posy - postargety)**2 
+    )
