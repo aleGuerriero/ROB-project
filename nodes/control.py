@@ -9,8 +9,8 @@ from src.plotter import Plotter
 from scripts.errors import ErrorType, ErrorTypeException
 import std_msgs.msg
 
-MAX_VELOCITY = 3
-ADD_VELOCITY = 0.2
+MAX_VELOCITY = 3.4
+ADD_VELOCITY = 0.1
 
 WHEELR = 0.25
 WHEELD = 1.4
@@ -44,6 +44,9 @@ class ControlNode:
         self.time = 0
         self.dx_integral = 0.0
         self.dtheta_integral = 0.0
+
+        self.x_derivative = 0
+        self.theta_derivative = 0
 
         self.running = False
 
@@ -80,7 +83,7 @@ class ControlNode:
 
 
         #ac = rospy.Subscriber("/car/joint_states", sensor_msgs.msg.JointState, self.compute_act_velocity)
-        #self.plot.plot_velocities(r_velocity, l_velocity, MAX_VELOCITY, self.act_vel)
+        
 
         msg = std_msgs.msg.Float64()
         msg.data = l_velocity
@@ -109,21 +112,20 @@ class ControlNode:
         # Compute time
         current_time = rospy.get_rostime()
         dt = (current_time - self.time).to_sec()
-        if dt==0:
-            dt = current_time.to_sec()
-        self.time = current_time
+        if dt!=0:
+            # Compute integral
+            self.dx_integral = ControlNode._integrate(self.dx_integral, dt, errx, self.prev_dx)
+            self.dtheta_integral = self._integrate(self.dtheta_integral, dt, errtheta, self.prev_dtheta)
+            #Compute derivative
+            self.x_derivative = (errx - self.prev_dx) / dt
+            self.theta_derivative = (errtheta - self.prev_dtheta) / dt
 
-        # Compute integral
-        self.dx_integral = ControlNode._integrate(self.dx_integral, dt, errx, self.prev_dx)
-        self.dtheta_integral = self._integrate(self.dtheta_integral, dt, errtheta, self.prev_dtheta)
-        #Compute derivative
-        x_derivative = (errx - self.prev_dx) / dt
-        theta_derivative = (errtheta - self.prev_dtheta) / dt
+        self.time = current_time
 
         # Compute PID output
         Px, Pt = (self.P_value * errx, self.P_value * errtheta)
         Ix, It = (self.I_value * self.dx_integral, self.I_value * self.dtheta_integral)
-        Dx, Dt = (self.D_value * x_derivative, self.D_value * theta_derivative)
+        Dx, Dt = (self.D_value * self.x_derivative, self.D_value * self.theta_derivative)
         controlx = Px + Ix + Dx
         controltheta = Pt + It + Dt
 
@@ -159,13 +161,13 @@ class ControlNode:
         if self.error_type is ErrorType.LINEAR:
             eq = errx + errtheta
         if self.error_type is ErrorType.NON_LINEAR:
-            eq = errtheta - errx*self.velocity*np.sinc(errtheta)
+            eq = (errx - 0.2*errtheta) - errx*self.velocity*np.sinc(errtheta)
 
 
         right_velocity = (2*self.velocity - WHEELD*eq)/(2*WHEELR)
         left_velocity = (2*self.velocity + WHEELD*eq)/(2*WHEELR)
         
-        self.plot.plot_velocities(right_velocity, left_velocity, MAX_VELOCITY)
+        self.plot.plot_velocities(right_velocity, left_velocity)
 
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 
