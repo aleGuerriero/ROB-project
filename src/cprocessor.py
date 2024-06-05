@@ -8,8 +8,6 @@ import numpy as np
 import cv2 as cv
 import math
 
-import rospy
-
 class CameraProcessor:
     """
     Class for processing and visualizing camera info.
@@ -93,7 +91,8 @@ class CameraProcessor:
             self,
             position,
             crosshair,
-            waypoint: tuple[int, int]
+            waypoint: tuple[int, int],
+            angle
     ) -> None:
         self.canvas = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         
@@ -118,6 +117,24 @@ class CameraProcessor:
             crosshair,
             waypoint,
             colors.RED
+        )
+
+        cv.line(
+            self.canvas,
+            position,
+            waypoint,
+            colors.LIGHT_BLUE
+        )
+
+        cv.ellipse(
+            self.canvas,
+            position,
+            (60, 60),
+            180,
+            90,
+            angle,
+            colors.WHITE,
+            2
         )
 
     @classmethod
