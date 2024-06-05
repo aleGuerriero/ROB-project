@@ -26,7 +26,7 @@ class TrajectoryTracking:
         pry, prx = TrajectoryTracking._closest_point(pos, trajectory)
         errtheta, theta = utils.get_angle(pos, (prx, pry))
         x = posx-prx
-        errx = (x + width/2)/(width/2) - 1
+        errx = 2*(x + width/2)/width - 1
         
         return (prx, pry), errx, errtheta
 

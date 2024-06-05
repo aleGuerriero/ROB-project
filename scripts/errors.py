@@ -9,7 +9,8 @@ class ErrorType(Enum):
     """
     ORIENTATION = 0
     POSITION = 1
-    NON_LINEAR = 2
+    LINEAR = 2
+    NON_LINEAR = 3
 
 class ErrorTypeException(Exception):
     pass

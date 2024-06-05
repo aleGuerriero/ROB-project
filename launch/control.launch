@@ -6,7 +6,7 @@
     <arg name="debug" default="True"/>
 
     <!-- Error flag-->
-    <arg name="err" default="nonlinear"/>
+    <arg name="err" default="position"/>
 
     <node pkg="project" name="ControlNode" type="control.py" ns="project">
         <rosparam command="load" file="$(find project)/config/pid.yaml"/>

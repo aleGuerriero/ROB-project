@@ -31,7 +31,7 @@ class PlannerNode:
             "/car/image_raw", sensor_msgs.msg.Image, self._camera_callback
         )
 
-        self.error_pub = rospy.Publisher("/planner/error", Error_msg, queue_size=1)
+        self.error_pub = rospy.Publisher("planner/error", Error_msg, queue_size=1)
 
         self.plot = Plotter()
 
@@ -46,7 +46,6 @@ class PlannerNode:
         
         pos, crosshair, centerline = self.camera.process(img_msg)
 
-        #invia l'errore al control node (da calcolare)
         err_msg = Error_msg()
         waypoint, errx, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
         err_msg.errx = errx

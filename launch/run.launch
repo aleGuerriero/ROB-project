@@ -9,7 +9,7 @@
     <arg name="strategy" default="trajectory"/>
 
     <!-- Error flag-->
-    <arg name="err" default="nonlinear"/>
+    <arg name="err" default="position"/>
 
     <!-- Control node-->
     <include file="$(find project)/launch/control.launch">
