@@ -45,7 +45,7 @@ class PlannerNode:
         pos, crosshair, centerline = self.camera.process(img_msg)
 
         err_msg = Error_msg()
-        waypoint, errx, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
+        waypoint, errx, theta, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
         err_msg.errx = errx
         err_msg.errtheta = errtheta
         rospy.loginfo(f'Publishing x: {err_msg.errx}, theta: {err_msg.errtheta}')
@@ -55,7 +55,7 @@ class PlannerNode:
         self.plot.plot_errors(errx, errtheta)
     
         if True:
-            self.camera.draw(pos, crosshair, waypoint)
+            self.camera.draw(pos, crosshair, waypoint, theta)
             self.camera.show()
 
 

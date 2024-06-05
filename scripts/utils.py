@@ -15,7 +15,7 @@ def get_angle(
     d = math.sqrt(
         pow(p1[0]-p[0], 2) + pow(p1[1]-p[1], 2)
     )
-    angle = math.asin((p1[0]-p[0])/d)
+    angle = math.asin((p[0]-p1[0])/d)
     deg = angle*180/math.pi
 
     return 2*(deg+90)/180-1, deg

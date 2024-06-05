@@ -28,7 +28,7 @@ class TrajectoryTracking:
         x = posx-prx
         errx = 2*(x + width/2)/width - 1
         
-        return (prx, pry), errx, errtheta
+        return (prx, pry), errx, theta, errtheta
 
     @staticmethod
     def _closest_point(
