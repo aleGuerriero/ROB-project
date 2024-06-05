@@ -4,7 +4,7 @@ from __future__ import annotations
 import rospy
 import sensor_msgs.msg
 import std_msgs
-
+import time
 import numpy as np
 from project.msg._Error_msg import Error_msg
 from src.plotter import Plotter
@@ -12,7 +12,7 @@ from scripts.errors import ErrorType, ErrorTypeException
 import std_msgs.msg
 import sensor_msgs
 
-MAX_VELOCITY = 10
+MAX_VELOCITY = 9
 ADD_VELOCITY = 0.5
 
 TURNING = 3
@@ -57,36 +57,35 @@ class ControlNode:
 
         self.isgoing = False
         self.started = False
-        #self.starter = rospy.Subscriber("starter", std_msgs.msg.Bool, self.start)
+
+        self.plot = Plotter()
+        
+        self.starter = rospy.Subscriber("/starter", std_msgs.msg.Bool, self.start)
             
         self.sub = rospy.Subscriber("planner/error", Error_msg, self._pid_callback)
 
         rospy.loginfo("Error subscribed")
 
-        self.plot = Plotter()
-
     def start(self, msg):
         if (msg.data == True):
             self.isgoing = True
-            
         return
     
-    def _pid_callback(self, error):
+    def _pid_callback(self, error):        
         
-        #while not self.isgoing:
-        #    rospy.loginfo('waiting')
-        
-        #if not self.started:
-        #   self.time= rospy.get_rostime()
-        #    self.started = True
+        while not self.isgoing:
+            rospy.loginfo('waiting')
+        if not self.started:
+            self.time= rospy.get_rostime()
+            self.started = True
         rospy.loginfo(f'error updated')
         x, theta = self._update_error(error.errx, error.errtheta)
         rospy.loginfo(f'error updated')
         l_velocity, r_velocity = self._compute_velocity(x, theta)
         rospy.loginfo(f'velocities computed')
 
-        ac = rospy.Subscriber("/car/joint_states", sensor_msgs.msg.JointState, self.compute_act_velocity)
-        self.plot.plot_velocities(r_velocity, l_velocity, MAX_VELOCITY, self.act_vel)
+        #ac = rospy.Subscriber("/car/joint_states", sensor_msgs.msg.JointState, self.compute_act_velocity)
+        #self.plot.plot_velocities(r_velocity, l_velocity, MAX_VELOCITY, self.act_vel)
 
         msg = std_msgs.msg.Float64()
         msg.data = l_velocity
@@ -147,10 +146,6 @@ class ControlNode:
 
         right_velocity = v + o
         left_velocity = v - o
-
-        #car/joint_states
-        #ac
-        
 
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')
 

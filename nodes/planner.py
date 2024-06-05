@@ -35,8 +35,6 @@ class PlannerNode:
 
         self.plot = Plotter()
 
-        
-
         rospy.loginfo("Planner initialized")
 
     def _camera_callback(
