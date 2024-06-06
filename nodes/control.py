@@ -63,7 +63,7 @@ class ControlNode:
         self.started = False
 
         self.plot = Plotter()
-            
+        
         self.sub = rospy.Subscriber("planner/error", Error_msg, self._pid_callback, queue_size=1)
 
         rospy.loginfo("Error subscribed")
