@@ -1,0 +1,17 @@
+<!-- launches the control node-->
+
+<launch>
+
+    <!-- Debugging flag-->
+    <arg name="debug" default="True"/>
+
+    <!-- Error flag-->
+    <arg name="err" default="nonlinear"/>
+
+    <node pkg="project" name="ControlNLNode" type="control_NL.py" ns="project">
+        <rosparam command="load" file="$(find project)/config/pid.yaml"/>
+        <param name="debug" value="$(arg debug)"/>
+        <param name="err" value="$(arg err)"/>
+    </node>
+
+</launch>

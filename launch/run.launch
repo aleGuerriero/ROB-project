@@ -9,18 +9,18 @@
     <arg name="strategy" default="trajectory"/>
 
     <!-- Error flag-->
-    <arg name="err" default="position"/>
+    <arg name="err" default="linear"/>
 
     <!-- Control node-->
-    <include file="$(find project)/launch/control.launch">
+    <include file="$(find project)/launch/control_PID.launch">
         <arg name="debug" value="$(arg debug)"/>
         <arg name="err" value="$(arg err)"/>
     </include>
 
-    <!-- Planner node-->
-    <include file="$(find project)/launch/planner.launch">
+    <!-- Control node-->
+    <include file="$(find project)/launch/control_NL.launch">
         <arg name="debug" value="$(arg debug)"/>
-        <arg name="strategy" value="$(arg strategy)"/>
+        <arg name="err" value="$(arg err)"/>
     </include>
 
     <!-- Simulation-->

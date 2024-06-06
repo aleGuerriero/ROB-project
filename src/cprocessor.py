@@ -92,7 +92,7 @@ class CameraProcessor:
             position,
             crosshair,
             waypoint: tuple[int, int],
-            angle
+            #angle
     ) -> None:
         self.canvas = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         
@@ -126,7 +126,7 @@ class CameraProcessor:
             colors.LIGHT_BLUE
         )
 
-        cv.ellipse(
+        '''cv.ellipse(
             self.canvas,
             position,
             (60, 60),
@@ -135,7 +135,7 @@ class CameraProcessor:
             angle,
             colors.WHITE,
             2
-        )
+        )'''
 
     @classmethod
     def width(self):
