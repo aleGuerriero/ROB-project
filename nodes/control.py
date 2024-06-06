@@ -140,6 +140,7 @@ class ControlNode:
             eq,
             prev_eq
     ) -> float:
+        # Saturazione integrale? Ki proporzionale? Limite alla saturazione?
         if integral < 1.2:
             integral += dt * (eq + prev_eq) / 2
 
@@ -159,6 +160,7 @@ class ControlNode:
         if self.error_type is ErrorType.ORIENTATION:
             eq = errtheta
         if self.error_type is ErrorType.LINEAR:
+            # Tuning?
             eq = errx + errtheta
         if self.error_type is ErrorType.NON_LINEAR:
             eq = (errx - 0.2*errtheta) - errx*self.velocity*np.sinc(errtheta)
