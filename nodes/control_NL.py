@@ -5,7 +5,7 @@ import std_msgs.msg
 import numpy as np
 from project.msg._Error_msg import Error_msg
 
-MAX_VELOCITY = 3.3
+MAX_VELOCITY = 3.0
 ADD_VELOCITY = 0.1
 
 WHEELR = 0.25

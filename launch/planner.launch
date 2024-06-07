@@ -1,0 +1,13 @@
+<!-- launches the planner node-->
+
+<launch>
+
+    <!-- Debugging flag-->
+    <arg name="debug" default="True"/>
+
+    <node pkg="project" name="PlannerNode" type="planner.py" ns="project">
+        <rosparam command="load" file="$(find project)/config/pid.yaml"/>
+        <param name="debug" value="$(arg debug)"/>
+    </node>
+
+</launch>

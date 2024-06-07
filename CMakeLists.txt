@@ -162,6 +162,7 @@ catkin_install_python(PROGRAMS
   #nodes/planner.py
   nodes/control_PID.py
   nodes/control_NL.py
+  nodes/planner.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

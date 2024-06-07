@@ -11,6 +11,12 @@
     <!-- Error flag-->
     <arg name="err" default="linear"/>
 
+    <!-- Planner node-->
+    <include file="$(find project)/launch/planner.launch">
+        <arg name="debug" value="$(arg debug)"/>
+    </include>
+
+
     <!-- Control node-->
     <include file="$(find project)/launch/control_PID.launch">
         <arg name="debug" value="$(arg debug)"/>

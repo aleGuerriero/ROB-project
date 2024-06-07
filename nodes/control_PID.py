@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 from __future__ import annotations
-import sensor_msgs
 import rospy
-from src.cprocessor import CameraProcessor
-from src.strategies.trajectory import TrajectoryTracking
 import std_msgs
 from project.msg._Error_msg import Error_msg
 from scripts.errors import ErrorType, ErrorTypeException
@@ -43,9 +40,6 @@ class ControlPIDNode:
             self.D_value = rospy.get_param("/project/ControlPIDNode/kdn", 0)        
         
         rospy.loginfo(f"PID params: {self.P_value}, {self.I_value}, {self.D_value}" )
-        
-        self.errx = 0
-        self.errtheta = 0
 
         self.velocity = 0
         
@@ -64,39 +58,18 @@ class ControlPIDNode:
         self.l_wheel = rospy.Publisher('/car/front_left_velocity_controller/command', std_msgs.msg.Float64, queue_size=10)
         self.error_pub = rospy.Publisher("control_PID/error", Error_msg, queue_size=1)
 
-        
         self.isgoing = False
         self.started = False
 
-        self.strategy_param = rospy.get_param("/project/ControlPIDNode/strategy", "trajectory")
-        if self.strategy_param=="trajectory":
-            self.strategy = TrajectoryTracking()
-        
-        self.debug = rospy.get_param("/project/ControlPIDNode/debug", False)
-        self.camera = CameraProcessor(self.debug)
-
-        # Receive camera images
-        self.camera_sub = rospy.Subscriber("/car/image_raw", sensor_msgs.msg.Image, self._camera_callback)
+        # Receive errors from planner
+        self.camera_sub = rospy.Subscriber("/planner/error", Error_msg, self.send)
         rospy.loginfo("Error subscribed")
         rospy.loginfo("PID control node initialized")
 
-    def _camera_callback(self, img_msg):
         
-        pos, crosshair, centerline = self.camera.process(img_msg)
+    def send(self, msg):        
 
-        waypoint, errx, theta, errtheta = self.strategy.plan(crosshair, self.camera.width, centerline)
-        self.errx = errx
-        self.errtheta = errtheta
-        
-        if True:
-            self.camera.draw(pos, crosshair, waypoint)
-            self.camera.show()
-        
-        self.send_error()
-        
-    def send_error (self):        
-
-        errx, errtheta = self._update_error()
+        errx, errtheta = self._update_error(msg)
         l_velocity, r_velocity = self._compute_velocity(errx, errtheta)
 
         if self.error_type is ErrorType.LINEAR:
@@ -109,7 +82,7 @@ class ControlPIDNode:
             rospy.loginfo(f'velocities published')
         
         if self.error_type is ErrorType.NON_LINEAR:
-            #send to NON_LINEAR controller
+            #send errors to NON_LINEAR controller
             msg = Error_msg()
             msg.errx = errx
             msg.errtheta = errtheta
@@ -117,9 +90,10 @@ class ControlPIDNode:
             self.error_pub.publish(msg)
         
     
-    def _update_error(self):
-        
-        rospy.loginfo(f'Error: {self.errx}, {self.errtheta}')
+    def _update_error(self, msg):
+
+        errx, errtheta = msg.errx, msg.errtheta        
+        rospy.loginfo(f'Recievied errors: {errx}, {errtheta}')
 
         if not self.running:
             self.time = rospy.get_rostime()
@@ -130,16 +104,15 @@ class ControlPIDNode:
         dt = (current_time - self.time).to_sec()
         if dt!=0:
             # Compute integral
-            self.dx_integral = ControlPIDNode._integrate(self.dx_integral, dt, self.errx, self.prev_dx)
-            self.dtheta_integral = self._integrate(self.dtheta_integral, dt, self.errtheta, self.prev_dtheta)
+            self.dx_integral = ControlPIDNode._integrate(self.dx_integral, dt, errx, self.prev_dx)
+            self.dtheta_integral = self._integrate(self.dtheta_integral, dt, errtheta, self.prev_dtheta)
             #Compute derivative
-            self.x_derivative = (self.errx - self.prev_dx) / dt
-            self.theta_derivative = (self.errtheta - self.prev_dtheta) / dt
-
+            self.x_derivative = (errx - self.prev_dx) / dt
+            self.theta_derivative = (errtheta - self.prev_dtheta) / dt
         self.time = current_time
 
         # Compute PID output
-        Px, Pt = (self.P_value * self.errx, self.P_value * self.errtheta)
+        Px, Pt = (self.P_value * errx, self.P_value * errtheta)
         Ix, It = (self.I_value * self.dx_integral, self.I_value * self.dtheta_integral)
         Dx, Dt = (self.D_value * self.x_derivative, self.D_value * self.theta_derivative)
         controlx = Px + Ix + Dx
@@ -147,6 +120,7 @@ class ControlPIDNode:
 
         rospy.loginfo(f'PID: {controlx}, {controltheta}')
 
+        #return errx and errtheta computed by PID
         return controlx, controltheta
     
     def _compute_velocity(
@@ -185,8 +159,7 @@ class ControlPIDNode:
         #   guaranteed to be delivered. Ugly, but it seems to work.
         for _ in range(10):
             self.l_wheel.publish(msg)
-            self.r_wheel.publish(msg)
-        
+            self.r_wheel.publish(msg)        
 
         rospy.loginfo("Control node shutting down.")
         
