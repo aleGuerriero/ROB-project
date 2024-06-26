@@ -145,7 +145,7 @@ class ControlPIDNode:
             eq,
             prev_eq
     ) -> float:
-        if integral < 1.2:
+        if integral < 1.2 and integral >-1.2:
             integral += dt * (eq + prev_eq) / 2
 
         rospy.loginfo(f'Integral: {integral}')
