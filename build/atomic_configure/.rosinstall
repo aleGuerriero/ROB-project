@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/ricca/catkin_ws/src/ROB-project/build/devel/setup.sh

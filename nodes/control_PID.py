@@ -6,7 +6,7 @@ from project.msg._Error_msg import Error_msg
 from scripts.errors import ErrorType, ErrorTypeException
 import std_msgs.msg
 
-MAX_VELOCITY = 3.6
+MAX_VELOCITY = 3.0
 ADD_VELOCITY = 0.1
 
 WHEELR = 0.25
@@ -40,7 +40,6 @@ class ControlPIDNode:
             self.D_value = rospy.get_param("/project/ControlPIDNode/kdn", 0)        
         
         rospy.loginfo(f"PID params: {self.P_value}, {self.I_value}, {self.D_value}" )
-
         self.velocity = 0
         
         self.prev_dx = 0
@@ -80,7 +79,7 @@ class ControlPIDNode:
             msg.data = r_velocity
             self.r_wheel.publish(msg)
             rospy.loginfo(f'velocities published')
-        
+
         if self.error_type is ErrorType.NON_LINEAR:
             #send errors to NON_LINEAR controller
             msg = Error_msg()
@@ -131,7 +130,7 @@ class ControlPIDNode:
         if self.velocity < MAX_VELOCITY:
             self.velocity += ADD_VELOCITY
 
-        eq = errx + errtheta
+        eq = errx + 0.1*errtheta
         right_velocity = (2*self.velocity - WHEELD*eq)/(2*WHEELR)
         left_velocity = (2*self.velocity + WHEELD*eq)/(2*WHEELR)
 

@@ -23,7 +23,7 @@
         <arg name="err" value="$(arg err)"/>
     </include>
 
-    <!-- Control node-->
+    <!-- Control node nonlinear-->
     <include file="$(find project)/launch/control_NL.launch">
         <arg name="debug" value="$(arg debug)"/>
         <arg name="err" value="$(arg err)"/>

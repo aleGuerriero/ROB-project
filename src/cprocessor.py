@@ -52,7 +52,7 @@ class CameraProcessor:
 
         track_outline = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
         img_mask = colors.mask(img, np.array(colors.LOWER_YELLOW), np.array(colors.UPPER_YELLOW))
-
+        
         # Detect track outline and draw it on a new image
         contours, _ = cv.findContours(img_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         cv.drawContours(track_outline, contours, 0, colors.MAGENTA)

@@ -5,7 +5,7 @@ import std_msgs.msg
 import numpy as np
 from project.msg._Error_msg import Error_msg
 
-MAX_VELOCITY = 3.0
+MAX_VELOCITY = 2.8
 ADD_VELOCITY = 0.1
 
 WHEELR = 0.25
@@ -46,7 +46,7 @@ class ControlNLNode:
         if self.velocity < MAX_VELOCITY:
             self.velocity += ADD_VELOCITY
 
-        eq = (errx - 0.2*errtheta) - errx*self.velocity*np.sinc(errtheta)
+        eq = (errx - 0.1*errtheta) - errx*self.velocity*np.sinc(errtheta)
         right_velocity = (2*self.velocity - WHEELD*eq)/(2*WHEELR)
         left_velocity = (2*self.velocity + WHEELD*eq)/(2*WHEELR)
         rospy.loginfo(f'r_velocity:{right_velocity}, l_velocity: {left_velocity}')

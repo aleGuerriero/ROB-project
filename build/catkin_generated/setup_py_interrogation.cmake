@@ -1,0 +1,7 @@
+set(project_SETUP_PY_SETUP_MODULE "distutils.core")
+set(project_SETUP_PY_VERSION "0.0.0")
+set(project_SETUP_PY_SCRIPTS "")
+set(project_SETUP_PY_PACKAGES "nodes;src;scripts")
+set(project_SETUP_PY_PACKAGE_DIRS "nodes;src;scripts")
+set(project_SETUP_PY_MODULES "")
+set(project_SETUP_PY_MODULE_DIRS "")
